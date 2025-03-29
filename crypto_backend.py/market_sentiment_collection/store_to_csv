@@ -1,0 +1,34 @@
+from twitter_data import get_tweets
+from bloomberg_data import get_bloomberg_news
+from reddit_data import get_reddit_posts
+import pandas as pd
+import os
+
+
+def save_to_csv(dataframe, filename):
+    """保存 DataFrame 到 CSV 文件中"""
+    if not os.path.exists(filename):  # 如果文件不存在，创建文件并写入数据
+        dataframe.to_csv(filename, index=False)
+    else:  # 如果文件存在，追加数据
+        dataframe.to_csv(filename, mode="a", header=False, index=False)
+
+
+def collect_all_data():
+    # 收集 Twitter 数据
+    # twitter_df = get_tweets("Bitcoin")
+    # save_to_csv(twitter_df, "twitter_data.csv")
+    # print(f"Twitter 数据保存到 twitter_data.csv, 共 {len(twitter_df)} 条记录。")
+
+    # 收集 Bloomberg 数据
+    bloomberg_df = get_bloomberg_news()
+    save_to_csv(bloomberg_df, "bloomberg_data.csv")
+    print(f"Bloomberg 数据保存到 bloomberg_data.csv, 共 {len(bloomberg_df)} 条记录。")
+
+    # 收集 Reddit 数据
+    reddit_df = get_reddit_posts("CryptoCurrency")
+    save_to_csv(reddit_df, "reddit_data.csv")
+    print(f"Reddit 数据保存到 reddit_data.csv, 共 {len(reddit_df)} 条记录。")
+
+
+if __name__ == "__main__":
+    collect_all_data()
