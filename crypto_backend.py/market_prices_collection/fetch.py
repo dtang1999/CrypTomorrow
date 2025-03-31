@@ -1,33 +1,51 @@
 import requests
 import pandas as pd
+from datetime import datetime, timedelta
+import time
 
 
-def get_binance_klines(symbol="BTCUSDT", interval="1h", limit=100):
-    """Fetch K-line (candlestick) data from Binance API"""
+def get_binance_klines(symbol="BTCUSDT", interval="1h", days=30):
+    """Fetch K-line (candlestick) data from Binance API for the past `days`"""
     url = "https://api.binance.us/api/v3/klines"
-    params = {"symbol": symbol, "interval": interval, "limit": limit}
-    response = requests.get(url, params=params)
 
-    # Print API response status code
-    print("API Response Status Code:", response.status_code)
+    end_time = int(time.time() * 1000)  # 当前时间戳（毫秒）
+    start_time = int((datetime.utcnow() - timedelta(days=days)).timestamp() * 1000)
 
-    # If the status code is not 200, print the error message
-    if response.status_code != 200:
-        print("API Error:", response.json())
+    all_data = []
+    limit = 1000  # 每次最多返回 1000 条数据（即 1000 小时）
+
+    while start_time < end_time:
+        params = {
+            "symbol": symbol,
+            "interval": interval,
+            "startTime": start_time,
+            "endTime": end_time,
+            "limit": limit
+        }
+        response = requests.get(url, params=params)
+        print("API Status:", response.status_code)
+
+        if response.status_code != 200:
+            print("API Error:", response.json())
+            break
+
+        data = response.json()
+
+        if not data:
+            break
+
+        all_data += data
+        last_time = data[-1][0]
+        start_time = last_time + 1
+
+        time.sleep(0.3)  # 防止 API 限速
+
+    if not all_data:
+        print("No data retrieved.")
         return pd.DataFrame()
-
-    data = response.json()
-
-    # Ensure the response is a list
-    if not isinstance(data, list):
-        print("Unexpected API Response:", data)
-        return pd.DataFrame()
-
-    # Print the first two rows of data
-    print("API Response Data (first 2 rows):", data[:2])
 
     df = pd.DataFrame(
-        data,
+        all_data,
         columns=[
             "timestamp",
             "open",
@@ -52,6 +70,8 @@ def get_binance_klines(symbol="BTCUSDT", interval="1h", limit=100):
     return df[["timestamp"] + numeric_cols]
 
 
-# Run test
-df = get_binance_klines()
-print("Final retrieved data:\n", df.head())
+# 示例运行：获取过去 7 天的 1 小时数据
+if __name__ == "__main__":
+    df = get_binance_klines(days=7)
+    print("共获取数据条数:", len(df))
+    print(df.head())
