@@ -28,7 +28,7 @@ def insert_data(df, symbol="BTCUSDT"):
 
 if __name__ == "__main__":
     # 默认获取过去 30 天的 1 小时数据
-    df = get_binance_klines(symbol="BTCUSDT", interval="1h", days=30)
+    df = get_binance_klines(symbol="BTCUSDT", interval="1h", days=180)
     print("获取数据条数:", len(df))
     print("样例数据:\n", df.head())
 
