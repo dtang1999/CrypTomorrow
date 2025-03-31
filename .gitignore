@@ -11,3 +11,7 @@ __pycache__/
 
 # Ignore .env file containing sensitive information
 .env
+prediction_vs_actual.png
+residual_histogram.png
+prediction_vs_actual.png
+residuals.png

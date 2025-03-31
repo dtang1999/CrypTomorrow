@@ -1,118 +1,73 @@
 # CrypTomorrow
 
+A cryptocurrency price tracking and analysis application.
+
+## Prerequisites
+
+- Docker Desktop installed on your system
+- Git (for cloning the repository)
+
 ## Setup Instructions
 
-### Prerequisites
-- Python 3.12.9 (exact version required)
-- pip (Python package installer)
-
-### Installing Python 3.12.9
-
-1. **macOS (using Homebrew)**:
-```bash
-# Install Python 3.12
-brew install python@3.12
-
-# Verify the installed version
-python3.12 --version
-
-
-# Or alternatively, you can download directly from Python's website:
-# Visit https://www.python.org/downloads/release/python-3129/
-# Download and install the macOS installer
-```
-
-2. **Windows**:
-   - Download Python 3.12.9 installer from [Python's official website](https://www.python.org/downloads/release/python-3129/)
-   - Run the installer and make sure to check "Add Python to PATH"
-
-3. **Linux (Ubuntu/Debian)**:
-```bash
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt update
-sudo apt install python3.12
-```
-
-4. **Verify Installation**:
-```bash
-python3.12 --version
-# Should output: Python 3.12.9
-```
-
-### Setting up the Virtual Environment
+### Using Docker (Recommended)
 
 1. Clone the repository:
-```bash
-git clone <your-repository-url>
-cd CrypTomorrow
+   ```bash
+   git clone https://github.com/yourusername/CrypTomorrow.git
+   cd CrypTomorrow
+   ```
+
+2. Start the application:
+   ```bash
+   docker compose up --build
+   ```
+
+   This will:
+   - Build the Docker image for the Python application
+   - Start the PostgreSQL with TimescaleDB container
+   - Initialize the database schema
+   - Start the application container
+
+3. To stop the application:
+   ```bash
+   docker compose down
+   ```
+
+   To stop and remove all data:
+   ```bash
+   docker compose down -v
+   ```
+
+## Project Structure
+
+```
+CrypTomorrow/
+├── crypto_backend.py/
+│   └── market_prices_collection/
+│       ├── __init__.py
+│       ├── store.py
+│       └── db_conn.py
+├── Dockerfile
+├── docker-compose.yml
+├── init_db.py
+└── requirements.txt
 ```
 
-2. Create a virtual environment with Python 3.12.9:
-```bash
-# On macOS/Linux
-python3.12 -m venv venv
+## Features
 
-# On Windows
-python -m venv venv
-```
+- Real-time cryptocurrency price tracking
+- Historical price data storage
+- Data analysis and visualization
+- RESTful API endpoints
 
-3. Activate the virtual environment:
-```bash
-# On macOS/Linux
-source venv/bin/activate
+## Contributing
 
-# On Windows
-.\venv\Scripts\activate
-```
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-4. Verify Python version in virtual environment:
-```bash
-python --version
-# Should output: Python 3.12.9
-```
+## License
 
-5. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-### Development Workflow
-
-1. Always activate the virtual environment before working on the project:
-```bash
-# On macOS/Linux
-source venv/bin/activate
-
-# On Windows
-.\venv\Scripts\activate
-```
-
-2. When you're done working:
-```bash
-deactivate
-```
-
-### Adding New Dependencies
-
-If you add new packages to the project:
-
-1. Install the new package:
-```bash
-pip install <package-name>
-```
-
-2. Update requirements.txt:
-```bash
-pip freeze > requirements.txt
-```
-
-3. Commit the updated requirements.txt to the repository.
-
-### Troubleshooting
-
-If you encounter any issues:
-
-1. Make sure you're using Python 3.12.9 (exact version required)
-2. Try deleting the venv directory and recreating it
-3. Ensure all dependencies are installed correctly
-4. Check if you're in the correct directory when running commands
+This project is licensed under the MIT License - see the LICENSE file for details.

@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  db:
+    image: timescale/timescaledb:latest-pg17
+    environment:
+      POSTGRES_DB: crypto_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  init-db:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_NAME: crypto_db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_PORT: 5432
+    volumes:
+      - .:/app
+    command: python init_db.py
+
+  app:
+    build: .
+    depends_on:
+      init-db:
+        condition: service_completed_successfully
+    environment:
+      DB_NAME: crypto_db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_PORT: 5432
+    volumes:
+      - .:/app
+    command: python crypto_backend.py/market_prices_collection/store.py
+
+  ai:
+    build: .
+    depends_on:
+      app:
+        condition: service_started
+    environment:
+      DB_NAME: crypto_db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_PORT: 5432
+    volumes:
+      - .:/app
+      - ./output:/app/output
+    command: python crypto_backend.py/crypto_ai/CryptoAI.py
+
+volumes:
+  postgres_data: 

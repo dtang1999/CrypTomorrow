@@ -6,11 +6,18 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
+import os
 
 
 class CryptoLSTMModel:
-    def __init__(self, db_params, symbol="BTCUSDT", sequence_length=50):
-        self.db_params = db_params
+    def __init__(self, symbol="BTCUSDT", sequence_length=50):
+        self.db_params = {
+            "dbname": os.getenv("DB_NAME", "crypto_db"),
+            "user": os.getenv("DB_USER", "postgres"),
+            "password": os.getenv("DB_PASSWORD", "password"),
+            "host": os.getenv("DB_HOST", "db"),
+            "port": os.getenv("DB_PORT", "5432"),
+        }
         self.symbol = symbol
         self.sequence_length = sequence_length
         self.scaler = MinMaxScaler()
@@ -157,13 +164,5 @@ class CryptoLSTMModel:
 
 
 if __name__ == "__main__":
-    db_config = {
-        "dbname": "crypto_db",
-        "user": "postgres",
-        "password": "your_password",
-        "host": "localhost",
-        "port": "5432",
-    }
-
-    model = CryptoLSTMModel(db_params=db_config)
+    model = CryptoLSTMModel()
     model.run()
