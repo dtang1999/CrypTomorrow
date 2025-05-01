@@ -47,7 +47,23 @@ services:
       - .:/app
     command: python crypto_backend.py/market_prices_collection/store.py
 
-  ai:
+  # ai:
+  #   build: .
+  #   depends_on:
+  #     app:
+  #       condition: service_started
+  #   environment:
+  #     DB_NAME: crypto_db
+  #     DB_USER: postgres
+  #     DB_PASSWORD: password
+  #     DB_HOST: db
+  #     DB_PORT: 5432
+  #   volumes:
+  #     - .:/app
+  #     - ./output:/app/output
+  #   command: python crypto_backend.py/crypto_ai/CryptoAI.py
+
+  train_short:
     build: .
     depends_on:
       app:
@@ -61,7 +77,23 @@ services:
     volumes:
       - .:/app
       - ./output:/app/output
-    command: python crypto_backend.py/crypto_ai/CryptoAI.py
+    command: python crypto_backend.py/crypto_ai/train_short.py
+
+  predict_short:
+    build: .
+    depends_on:
+      train_short:
+        condition: service_completed_successfully
+    environment:
+      DB_NAME: crypto_db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_PORT: 5432
+    volumes:
+      - .:/app
+      - ./output:/app/output
+    command: python crypto_backend.py/crypto_ai/predict_short.py
 
 volumes:
   postgres_data: 
